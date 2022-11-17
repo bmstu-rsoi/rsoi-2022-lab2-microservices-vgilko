@@ -1,4 +1,4 @@
-package ru.gilko.carsimpl.mapper;
+package ru.gilko.carsimpl.config.mapper;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

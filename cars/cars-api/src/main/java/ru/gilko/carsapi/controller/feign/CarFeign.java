@@ -13,7 +13,7 @@ import ru.gilko.carsapi.dto.CarOutDto;
 
 import java.util.UUID;
 
-@FeignClient(name = "cars")
+@FeignClient(name = "cars", path = "${server.servlet.context-path}")
 public interface CarFeign {
     @GetMapping(path = ControllerUrl.CARS_URL)
     Page<CarOutDto> getCars(@RequestParam @DefaultValue("false") boolean showAll,
