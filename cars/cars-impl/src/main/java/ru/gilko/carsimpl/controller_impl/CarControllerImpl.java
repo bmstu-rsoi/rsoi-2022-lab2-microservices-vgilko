@@ -5,10 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import ru.gilko.carsapi.controller.api.CarController;
+import ru.gilko.carsapi.controller.CarController;
 import ru.gilko.carsapi.dto.CarOutDto;
 import ru.gilko.carsimpl.service.api.CarService;
 
+import java.nio.channels.ReadPendingException;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -29,6 +32,20 @@ public class CarControllerImpl implements CarController {
         Page<CarOutDto> cars = carService.getCars(showAll, pageRequest);
 
         return ResponseEntity.ok(cars);
+    }
+
+    @Override
+    public CarOutDto getCar(UUID carId) {
+        log.info("Request for reading car {}", carId);
+
+        return carService.getCar(carId);
+    }
+
+    @Override
+    public ResponseEntity<List<CarOutDto>> getCars(Set<UUID> carUids) {
+        log.info("Request for reading cars with uids {}", carUids);
+
+        return ResponseEntity.ok(carService.getCars(carUids));
     }
 
     @Override

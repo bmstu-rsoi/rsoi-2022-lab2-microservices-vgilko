@@ -3,7 +3,7 @@ package ru.gilko.rentalimpl.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import ru.gilko.rentalapi.constants.enums.Status;
+import ru.gilko.rentalapi.constants.enums.RentalStatus;
 import ru.gilko.rentalapi.dto.RentalInDto;
 import ru.gilko.rentalapi.dto.RentalOutDto;
 import ru.gilko.rentalapi.exceptions.NoSuchEntityException;
@@ -40,7 +40,7 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = modelMapper.map(rentalInDto, Rental.class);
         rental.setRentalUid(UUID.randomUUID());
         rental.setUsername(username);
-        rental.setStatus(Status.IN_PROGRESS);
+        rental.setStatus(RentalStatus.IN_PROGRESS);
         return rental;
     }
 
@@ -60,20 +60,20 @@ public class RentalServiceImpl implements RentalService {
 
         rental.ifPresent(value -> log.info("Get rental: {}", value));
 
-        return rental.map(optionalRental -> modelMapper.map(rental, RentalOutDto.class));
+        return rental.map(optionalRental -> modelMapper.map(rental.get(), RentalOutDto.class));
     }
 
     @Override
     public void cancelRental(UUID rentalUid, String username) {
-        changeRentalStatus(username, rentalUid, Status.CANCELED);
+        changeRentalStatus(username, rentalUid, RentalStatus.CANCELED);
     }
 
     @Override
     public void finishRental(UUID rentalUid, String username) {
-        changeRentalStatus(username, rentalUid, Status.FINISHED);
+        changeRentalStatus(username, rentalUid, RentalStatus.FINISHED);
     }
 
-    private void changeRentalStatus(String username, UUID rentalUid, Status finished) {
+    private void changeRentalStatus(String username, UUID rentalUid, RentalStatus finished) {
         Optional<Rental> rental = rentalRepository.findByUsernameAndRentalUid(username, rentalUid);
 
         if (rental.isEmpty()) {

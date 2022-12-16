@@ -6,11 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.gilko.carsapi.dto.CarOutDto;
+import ru.gilko.carsapi.exception.NoSuchEntityException;
 import ru.gilko.carsimpl.domain.Car;
 import ru.gilko.carsimpl.repository.CarRepository;
 import ru.gilko.carsimpl.service.api.CarService;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -39,13 +41,35 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public void changeAvailability(UUID carId) {
-        Optional<Car> car = carRepository.findByCarUid(carId);
-        if (car.isPresent()) {
-            Car unpackedCar = car.get();
-            unpackedCar.setAvailability(!unpackedCar.isAvailability());
-            carRepository.save(unpackedCar);
+        Car car = carRepository.findByCarUid(carId).orElseThrow(() -> {
+            log.info("Request for changing availability for non existing car {}", carId);
 
-            log.info("Changed car {} availability to {}", carId, unpackedCar.isAvailability());
-        }
+            return new NoSuchEntityException("There is no car with id = %s".formatted(carId));
+        });
+
+        car.setAvailability(!car.isAvailability());
+        carRepository.save(car);
+
+        log.info("Changed car {} availability to {}", carId, car.isAvailability());
+    }
+
+    @Override
+    public List<CarOutDto> getCars(Set<UUID> carUids) {
+        List<Car> cars = carRepository.findAllByCarUidIn(carUids);
+
+        return cars.stream()
+                .map(car -> modelMapper.map(car, CarOutDto.class))
+                .toList();
+    }
+
+    @Override
+    public CarOutDto getCar(UUID carId) {
+        Car car = carRepository.findByCarUid(carId).orElseThrow(() -> {
+            log.error("Requesting non existing car {}", carId);
+
+            return new NoSuchEntityException("There is no car with id = %s".formatted(carId));
+        });
+
+        return modelMapper.map(car, CarOutDto.class);
     }
 }

@@ -1,4 +1,5 @@
 version: "3"
+
 services:
   postgres:
     image: library/postgres:13
@@ -7,14 +8,63 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: postgres
+      POSTGRES_MULTIPLE_DATABASES: postgres, cars
     volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./postgres/:/docker-entrypoint-initdb.d/
+      - ./lab_data/postgres/scripts/db-v3.sql:/docker-entrypoint-initdb.d/dv-v3.sql
     ports:
       - "5432:5432"
 
-# TODO добавить сервисы
+
+
+  service-registry:
+    image: service-registry
+    build: service-registry/
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://service-registry:8761/eureka
+    ports:
+      - "8761:8761"
+
+    hostname: service-registry
+
+  gateway:
+    image: gateway
+    build: gateway/
+    links:
+      - "service-registry"
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+    ports:
+      - "8080:8080"
+
+  cars:
+    image: cars
+    build: cars/
+    links:
+      - "service-registry"
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+    ports:
+      - "8070:8070"
+
+  rental:
+    image: rental
+    build: rental/
+    links:
+      - "service-registry"
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+    ports:
+      - "8060:8060"
+
+  payment:
+    image: payment
+    build: payment/
+    links:
+      - "service-registry"
+    environment:
+      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
+    ports:
+      - "8050:8050"
 
 volumes:
   db-data:

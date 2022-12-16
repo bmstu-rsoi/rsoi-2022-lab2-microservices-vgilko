@@ -2,10 +2,10 @@ package ru.gilko.rentalimpl.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.gilko.rentalapi.constants.enums.Status;
+import ru.gilko.rentalapi.constants.enums.RentalStatus;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity(name = "rental")
@@ -19,8 +19,8 @@ public class Rental {
     private String username;
     private UUID paymentUid;
     private UUID carUid;
-    private LocalDateTime dateFrom;
-    private LocalDateTime dateTo;
+    private LocalDate dateFrom;
+    private LocalDate dateTo;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private RentalStatus status;
 }

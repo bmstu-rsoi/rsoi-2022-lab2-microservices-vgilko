@@ -15,9 +15,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: docker/setup-buildx-action@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
 
-      # TODO build and run unit tests
+      - uses: docker/setup-buildx-action@v2
 
       - name: Build images
         timeout-minutes: 10
@@ -28,15 +32,17 @@ jobs:
         run: |
           docker compose up -d
           ./scripts/wait-script.sh
-        env:
-          - WAIT_PORTS=8080,8070,8060,8050
+
+      - name: Sleep for 30 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
 
       - name: Run API Tests
         uses: matt-ball/newman-action@master
         with:
-          # TODO insert your variant
-          collection: <variant>/postman/collection.json
-          environment: <variant>/postman/environment.json
+          collection: lab_data/variants/v3/postman/collection.json
+          environment: lab_data/variants/v3/postman/environment.json
           delayRequest: 100
           reporters: '[ "cli" ]'
 
