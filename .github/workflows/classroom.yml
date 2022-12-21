@@ -31,8 +31,6 @@ jobs:
         run: mvn -f payment/pom.xml --batch-mode --update-snapshots clean install -DskipTests
       - name: rental build
         run: mvn -f rental/pom.xml --batch-mode --update-snapshots clean install -DskipTests
-      - name: service-registry build
-        run: mvn -f service-registry/pom.xml --batch-mode --update-snapshots clean install -DskipTests
       - name: gateway build
         run: mvn -f gateway/pom.xml --batch-mode --update-snapshots clean install -DskipTests
 
@@ -49,7 +47,7 @@ jobs:
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '30s'
+          time: '50s'
 
       - name: Run API Tests
         uses: matt-ball/newman-action@master
@@ -63,7 +61,7 @@ jobs:
         if: failure()
         uses: jwalton/gh-docker-logs@v2
         with:
-          images: 'library/postgres:13,gateway,rental,payment,cars,service-registry'
+          images: 'library/postgres:13,gateway,rental,payment,cars'
           tail: '250'
 
       - uses: education/autograding@v1

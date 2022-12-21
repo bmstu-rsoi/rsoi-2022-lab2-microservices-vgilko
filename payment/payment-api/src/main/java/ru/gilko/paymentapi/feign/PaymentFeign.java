@@ -8,7 +8,7 @@ import ru.gilko.paymentapi.dto.PaymentOutDto;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "payment", path = "/payment")
+@FeignClient(name = "payment", path = "/payment", url = "${feign.payment.url}")
 public interface PaymentFeign {
     @GetMapping(path = ControllerUrls.PAYMENT_BASE_URL)
     List<PaymentOutDto> getPayments(@RequestParam List<UUID> paymentsUids);

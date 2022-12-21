@@ -10,7 +10,7 @@ import ru.gilko.rentalapi.dto.RentalOutDto;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "rental", path = "/rental")
+@FeignClient(name = "rental", path = "/rental", url = "${feign.rental.url}")
 public interface RentalFeign {
     @PostMapping(path = ControllerUrls.RENTAL_BASE_URL)
     RentalOutDto createRental(@RequestHeader(ProjectConstants.USERNAME_HEADER) String username, @RequestBody RentalInDto rentalInDto);

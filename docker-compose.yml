@@ -15,25 +15,12 @@ services:
     ports:
       - "5432:5432"
 
-  service-registry:
-    image: service-registry
-    build: service-registry/
-    environment:
-      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://service-registry:8761/eureka
-    ports:
-      - "8761:8761"
-
-    hostname: service-registry
-
   gateway:
     image: gateway
     build: gateway/
-    environment:
-      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
     ports:
       - "8080:8080"
     depends_on:
-      - service-registry
       - cars
       - rental
       - payment
@@ -41,34 +28,25 @@ services:
   cars:
     image: cars
     build: cars/
-    environment:
-      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
     ports:
       - "8070:8070"
     depends_on:
-      - service-registry
       - postgres
 
   rental:
     image: rental
     build: rental/
-    environment:
-      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
     ports:
       - "8060:8060"
     depends_on:
-      - service-registry
       - postgres
 
   payment:
     image: payment
     build: payment/
-    environment:
-      - "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka"
     ports:
       - "8050:8050"
     depends_on:
-      - service-registry
       - postgres
 
 volumes:
