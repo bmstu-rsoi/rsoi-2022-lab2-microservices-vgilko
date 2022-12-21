@@ -64,7 +64,7 @@ jobs:
         uses: jwalton/gh-docker-logs@v2
         with:
           images: 'library/postgres:13,gateway,rental,payment,cars,service-registry'
-          tail: '100'
+          tail: '250'
 
       - uses: education/autograding@v1
         id: autograder
