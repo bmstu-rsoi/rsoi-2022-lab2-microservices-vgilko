@@ -30,15 +30,15 @@
 
 1. Для разработки можно использовать Postgres в docker, для этого нужно запустить docker compose up -d, поднимется
    контейнер с Postgres 13, и будут созданы соответствующие вашему варианту (описанные в
-   файлах [schema-$VARIANT](lab_data/postgres/scripts)) базы данных и пользователь `program`:`test`.
-2. Для создания базы нужно прописать в [20-create-schemas.sh](lab_data/postgres/20-create-databases.sh) свой вариант задания в
+   файлах [schema-$VARIANT](info/postgres/scripts)) базы данных и пользователь `program`:`test`.
+2. Для создания базы нужно прописать в [20-create-schemas.sh](info/postgres/20-create-databases.sh) свой вариант задания в
 3. Docker Compose позволяет выполнять сборку образа, для этого нужно прописать
    блок [`build`](https://docs.docker.com/compose/compose-file/build/).
 4. Горизонтальную коммуникацию между сервисами делать нельзя.
 5. Интеграционные тесты можно проверить локально, для этого нужно импортировать в Postman
    коллекцию `<variant>/postman/collection.json`) и `<variant>/postman/environment.json`.
 
-![Services](lab_data/images/services.png)
+![Services](info/images/services.png)
 
 Предположим, у нас сервисы `UserService`, `OrderService`, `WarehouseService` и `Gateway`:
 
@@ -60,7 +60,7 @@
 Варианты заданий берутся исходя из формулы:
 (номер в [списке группы](https://docs.google.com/spreadsheets/d/1BT5iLgERiWUPPn4gtOQk4KfHjVOTQbUS7ragAJrl6-Q)-1) % 4)+1.
 
-1. [Flight Booking System](lab_data/variants/v1/README.md)
-1. [Hotels Booking System](lab_data/variants/v2/README.md)
-1. [Car Rental System](lab_data/variants/v3/README.md)
-1. [Library System](lab_data/variants/v4/README.md)
+1. [Flight Booking System](info/variants/v1/README.md)
+1. [Hotels Booking System](info/variants/v2/README.md)
+1. [Car Rental System](info/variants/v3/README.md)
+1. [Library System](info/variants/v4/README.md)
