@@ -1,0 +1,15 @@
+package ru.gilko.gatewayimpl;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
+@SpringBootApplication
+@EnableFeignClients(basePackages = {"ru.gilko.carsapi.feign", "ru.gilko.rentalapi.feign", "ru.gilko.paymentapi.feign"})
+public class GatewayApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayApplication.class, args);
+    }
+
+}

@@ -1,4 +1,5 @@
 version: "3"
+
 services:
   postgres:
     image: library/postgres:13
@@ -10,11 +11,43 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./postgres/:/docker-entrypoint-initdb.d/
+      - ./info/postgres/:/docker-entrypoint-initdb.d/
     ports:
       - "5432:5432"
 
-# TODO добавить сервисы
+  gateway:
+    image: gateway
+    build: gateway/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - cars
+      - rental
+      - payment
+
+  cars:
+    image: cars
+    build: cars/
+    ports:
+      - "8070:8070"
+    depends_on:
+      - postgres
+
+  rental:
+    image: rental
+    build: rental/
+    ports:
+      - "8060:8060"
+    depends_on:
+      - postgres
+
+  payment:
+    image: payment
+    build: payment/
+    ports:
+      - "8050:8050"
+    depends_on:
+      - postgres
 
 volumes:
   db-data:

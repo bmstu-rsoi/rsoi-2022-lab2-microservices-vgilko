@@ -6,12 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.gilko.carsapi.dto.CarOutDto;
-import ru.gilko.carsapi.dto.PageableCollectionOutDto;
+import ru.gilko.carsapi.exception.NoSuchEntityException;
 import ru.gilko.carsimpl.domain.Car;
 import ru.gilko.carsimpl.repository.CarRepository;
 import ru.gilko.carsimpl.service.api.CarService;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -29,34 +30,46 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public PageableCollectionOutDto<CarOutDto> getCars(boolean showAll, Pageable pageable) {
+    public Page<CarOutDto> getCars(boolean showAll, Pageable pageable) {
         Page<Car> cars = showAll
                 ? carRepository.findAll(pageable)
                 : carRepository.findAllByAvailabilityIsTrue(pageable);
 
 
-        return mapToPageCollectionOutDto(cars, CarOutDto.class);
+        return cars.map(car -> modelMapper.map(car, CarOutDto.class));
     }
 
     @Override
     public void changeAvailability(UUID carId) {
-        Optional<Car> car = carRepository.findByCarUid(carId);
-        if (car.isPresent()) {
-            Car unpackedCar = car.get();
-            unpackedCar.setAvailability(!unpackedCar.isAvailability());
-            carRepository.save(unpackedCar);
+        Car car = carRepository.findByCarUid(carId).orElseThrow(() -> {
+            log.info("Request for changing availability for non existing car {}", carId);
 
-            log.info("Changed car {} availability to {}", carId, unpackedCar.isAvailability());
-        }
+            return new NoSuchEntityException("There is no car with id = %s".formatted(carId));
+        });
+
+        car.setAvailability(!car.isAvailability());
+        carRepository.save(car);
+
+        log.info("Changed car {} availability to {}", carId, car.isAvailability());
     }
 
-    private <T> PageableCollectionOutDto<T> mapToPageCollectionOutDto(Page<Car> page, Class<T> destinationClass) {
-        Page<T> mappedPage = page.map(car -> modelMapper.map(car, destinationClass));
+    @Override
+    public List<CarOutDto> getCars(Set<UUID> carUids) {
+        List<Car> cars = carRepository.findAllByCarUidIn(carUids);
 
-        return buildPageCollectionOutDto(mappedPage);
+        return cars.stream()
+                .map(car -> modelMapper.map(car, CarOutDto.class))
+                .toList();
     }
 
-    private <T> PageableCollectionOutDto<T> buildPageCollectionOutDto(Page<T> page) {
-        return new PageableCollectionOutDto<>(page.getContent(), page.getNumber(), page.getSize(), page.getTotalPages());
+    @Override
+    public CarOutDto getCar(UUID carId) {
+        Car car = carRepository.findByCarUid(carId).orElseThrow(() -> {
+            log.error("Requesting non existing car {}", carId);
+
+            return new NoSuchEntityException("There is no car with id = %s".formatted(carId));
+        });
+
+        return modelMapper.map(car, CarOutDto.class);
     }
 }

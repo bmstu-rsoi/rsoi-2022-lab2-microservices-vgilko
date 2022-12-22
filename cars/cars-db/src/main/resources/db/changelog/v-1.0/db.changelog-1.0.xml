@@ -7,4 +7,5 @@
 
     <include file="001_addTagVersion-1.0.0.xml" relativeToChangelogFile="true"/>
     <include file="002_createCarsTable.xml" relativeToChangelogFile="true"/>
+    <include file="003_initDatabase.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
